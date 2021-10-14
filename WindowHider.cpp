@@ -1,10 +1,14 @@
 #include <Windows.h>
+#include <stdio.h>
 #include "IDM.h"
+
+HINSTANCE gInstance;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+	gInstance = hInstance;
 	WNDCLASSEX wx = { sizeof(WNDCLASSEX) };
 
 	wx.lpfnWndProc = WndProc;
@@ -14,11 +18,11 @@ int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	HWND hWnd = CreateWindowEx(0, L"WindowHider", L"", 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
 	ShowWindow(hWnd, SW_HIDE);
 
-	MSG stMsg;
-	while (GetMessage(&stMsg, NULL, 0, 0))
+	MSG msg;
+	while (GetMessage(&msg, NULL, 0, 0))
 	{
-		TranslateMessage(&stMsg);
-		DispatchMessage(&stMsg);
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
 	}
 	return 0;
 }
@@ -64,11 +68,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_COMMAND:
 		{
-			if (LOWORD(lParam) == IDM_SHOWALL)
+			OutputDebugString(L"message");
+			
+			if (LOWORD(wParam) == IDM_SHOWALL)
 			{
 				OutputDebugString(L"Show all");
 			}
-			else if (LOWORD(lParam) == IDM_EXIT)
+			else if (LOWORD(wParam) == IDM_EXIT)
 			{
 				PostMessageW(hWnd, WM_DESTROY, NULL, NULL);
 			}
