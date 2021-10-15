@@ -55,7 +55,9 @@ void showWindow()
 {
 	if (!windows.empty())
 	{
-		ShowWindow(windows.back(), SW_SHOW);
+		HWND window = windows.back();
+		ShowWindow(window, SW_SHOW);
+		SetForegroundWindow(window);
 		windows.pop_back();
 	}
 }
