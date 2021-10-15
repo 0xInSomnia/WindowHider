@@ -1,9 +1,13 @@
 #include <Windows.h>
-#include <stdio.h>
+#include <vector>
 #include "IDM.h"
 
 HINSTANCE gInstance;
+std::vector<HWND> windows;
 
+void hideWindow();
+void showWindow();
+void showAll();
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
@@ -17,14 +21,52 @@ int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	RegisterClassEx(&wx);
 	HWND hWnd = CreateWindowEx(0, L"WindowHider", L"", 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
 	ShowWindow(hWnd, SW_HIDE);
+	RegisterHotKey(hWnd, IDM_HIDE, MOD_CONTROL | MOD_NOREPEAT, '1');
+	RegisterHotKey(hWnd, IDM_SHOW, MOD_CONTROL | MOD_NOREPEAT, '2');
 
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
+		if (msg.message == WM_HOTKEY)
+		{
+			if (msg.wParam == IDM_HIDE)
+			{
+				hideWindow();
+			}
+			else if (msg.wParam == IDM_SHOW)
+			{
+				showWindow();
+			}
+		}
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 	return 0;
+}
+
+void hideWindow()
+{
+	HWND window = GetForegroundWindow();
+	ShowWindow(window, SW_HIDE);
+	windows.push_back(window);
+}
+
+void showWindow()
+{
+	if (!windows.empty())
+	{
+		ShowWindow(windows.back(), SW_SHOW);
+		windows.pop_back();
+	}
+}
+
+void showAll()
+{
+	for (auto& window : windows)
+	{
+		ShowWindow(window, SW_SHOW);
+		windows.pop_back();
+	}
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -68,14 +110,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		case WM_COMMAND:
 		{
-			OutputDebugString(L"message");
-			
 			if (LOWORD(wParam) == IDM_SHOWALL)
 			{
-				OutputDebugString(L"Show all");
+				showAll();
 			}
 			else if (LOWORD(wParam) == IDM_EXIT)
 			{
+				showAll();
 				PostMessageW(hWnd, WM_DESTROY, NULL, NULL);
 			}
 			break;
