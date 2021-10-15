@@ -21,8 +21,8 @@ int CALLBACK wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 	RegisterClassEx(&wx);
 	HWND hWnd = CreateWindowEx(0, L"WindowHider", L"", 0, 0, 0, 0, 0, HWND_MESSAGE, NULL, NULL, NULL);
 	ShowWindow(hWnd, SW_HIDE);
-	RegisterHotKey(hWnd, IDM_HIDE, MOD_CONTROL | MOD_NOREPEAT, '1');
-	RegisterHotKey(hWnd, IDM_SHOW, MOD_CONTROL | MOD_NOREPEAT, '2');
+	RegisterHotKey(hWnd, IDM_HIDE, MOD_ALT | MOD_NOREPEAT, '1');
+	RegisterHotKey(hWnd, IDM_SHOW, MOD_ALT | MOD_NOREPEAT, '2');
 
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0))
