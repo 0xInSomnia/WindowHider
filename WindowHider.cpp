@@ -67,6 +67,7 @@ void showAll()
 	for (auto& window : windows)
 	{
 		ShowWindow(window, SW_SHOW);
+		SetForegroundWindow(window);
 		windows.pop_back();
 	}
 }
